@@ -11,23 +11,23 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> with WidgetsBindingObserver{
-  var viewPlayerController;
+class _HomeState extends State<Home> with WidgetsBindingObserver {
+  dynamic  viewPlayerController;
   late MethodChannel _channel;
   bool isNormalScreen = true;
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    _channel =  const MethodChannel('bms_video_player');
+    _channel = const MethodChannel('bms_video_player');
     _channel.setMethodCallHandler(_handleMethod);
     super.initState();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    if(Platform.isIOS) {
+    WidgetsBinding.instance.addObserver(this);
+    if (Platform.isIOS) {
       _channel.invokeMethod('pauseVideo', 'pauseVideo');
     }
     super.dispose();
@@ -56,20 +56,17 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
           DeviceOrientation.landscapeLeft,
           DeviceOrientation.landscapeRight,
         ]);
-        setState(() {
-
-        });
+        setState(() {});
         break;
       case 'normalScreen':
         isNormalScreen = true;
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,overlays: [SystemUiOverlay.bottom,SystemUiOverlay.top]);
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+            overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
         SystemChrome.setPreferredOrientations([
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown,
         ]);
-        setState(() {
-
-        });
+        setState(() {});
         break;
     }
   }
@@ -83,14 +80,14 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
     var x = 0.0;
     var y = 0.0;
     var width = 400.0;
-    var height = isNormalScreen?400.0:MediaQuery.of(context).size.height;
+    var height = isNormalScreen ? 400.0 : MediaQuery.of(context).size.height;
 
-    BmsVideoPlayer videoPlayer =  BmsVideoPlayer(
-        onCreated: onViewPlayerCreated,
-        x: x,
-        y: y,
-        width: width,
-        height: height,
+    BmsVideoPlayer videoPlayer = BmsVideoPlayer(
+      onCreated: onViewPlayerCreated,
+      x: x,
+      y: y,
+      width: width,
+      height: height,
     );
 
     return Scaffold(
@@ -98,8 +95,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
         title: Text("Ads Demo"),
         centerTitle: true,
       ),
-      body:
-      ListView.builder(
+      body: ListView.builder(
         itemCount: 1,
         itemBuilder: (BuildContext context, int index) {
           return Container(
@@ -115,15 +111,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
 }
 
 class _VideoPlayerState extends State<BmsVideoPlayer> {
-
   String viewType = 'NativeUI';
-  var viewPlayerController;
-
-
 
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       child: nativeView(),
@@ -135,26 +126,27 @@ class _VideoPlayerState extends State<BmsVideoPlayer> {
       return AndroidView(
         viewType: viewType,
         onPlatformViewCreated: onPlatformViewCreated,
-        creationParams: <String,dynamic>{
+        creationParams: <String, dynamic>{
           "x": widget.x,
           "y": widget.y,
           "width": widget.width,
           "height": widget.height,
-          "videoURL":"https://storage.googleapis.com/gvabox/media/samples/stock.mp4"
+          "videoURL":
+              "https://storage.googleapis.com/gvabox/media/samples/stock.mp4"
         },
-
         creationParamsCodec: const StandardMessageCodec(),
       );
     } else {
       return UiKitView(
         viewType: viewType,
         onPlatformViewCreated: onPlatformViewCreated,
-        creationParams: <String,dynamic>{
+        creationParams: <String, dynamic>{
           "x": widget.x,
           "y": widget.y,
           "width": widget.width,
           "height": widget.height,
-          "videoURL":"https://storage.googleapis.com/gvabox/media/samples/stock.mp4"
+          "videoURL":
+              "https://storage.googleapis.com/gvabox/media/samples/stock.mp4"
         },
         creationParamsCodec: const StandardMessageCodec(),
       );
@@ -163,25 +155,23 @@ class _VideoPlayerState extends State<BmsVideoPlayer> {
 
   Future<void> onPlatformViewCreated(id) async {
     if (widget.onCreated == null) {
-      return;
+      return onPlatformViewCreated(id);
     }
 
-    widget.onCreated( BmsVideoPlayerController.init(id));
+    widget.onCreated!(BmsVideoPlayerController.init(id));
   }
 }
 
 typedef void BmsVideoPlayerCreatedCallback(BmsVideoPlayerController controller);
 
 class BmsVideoPlayerController {
-
   late MethodChannel _channel;
 
   BmsVideoPlayerController.init(int id) {
-    _channel =   MethodChannel('bms_video_player');
+    _channel = MethodChannel('bms_video_player');
   }
 
   Future<void> loadUrl(String url) async {
-    assert(url != null);
     return _channel.invokeMethod('loadUrl', url);
   }
 
@@ -194,18 +184,16 @@ class BmsVideoPlayerController {
   }
 }
 
-
 class BmsVideoPlayer extends StatefulWidget {
-
-  final BmsVideoPlayerCreatedCallback onCreated;
+  final BmsVideoPlayerCreatedCallback? onCreated;
   final x;
   final y;
   final width;
   final height;
 
   BmsVideoPlayer({
-     Key? key,
-    required this.onCreated,
+    Key? key,
+    @required this.onCreated,
     @required this.x,
     @required this.y,
     @required this.width,
@@ -214,5 +202,4 @@ class BmsVideoPlayer extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _VideoPlayerState();
-
 }
