@@ -18,30 +18,29 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
 
   @override
   void initState() {
-    super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _channel =  MethodChannel('bms_video_player');
+    _channel =  const MethodChannel('bms_video_player');
     _channel.setMethodCallHandler(_handleMethod);
+    super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     WidgetsBinding.instance.removeObserver(this);
     if(Platform.isIOS) {
       _channel.invokeMethod('pauseVideo', 'pauseVideo');
     }
+    super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
-        this.viewPlayerController.resumeVideo();
+        viewPlayerController.resumeVideo();
         break;
       case AppLifecycleState.paused:
-        this.viewPlayerController.pauseVideo();
+        viewPlayerController.pauseVideo();
         break;
       default:
         break;
@@ -91,7 +90,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
         x: x,
         y: y,
         width: width,
-        height: height, key: null,
+        height: height,
     );
 
     return Scaffold(
@@ -104,10 +103,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver{
         itemCount: 1,
         itemBuilder: (BuildContext context, int index) {
           return Container(
-            child: videoPlayer,
             width: width,
             height: height,
             color: Colors.black,
+            child: videoPlayer,
           );
         },
       ),
